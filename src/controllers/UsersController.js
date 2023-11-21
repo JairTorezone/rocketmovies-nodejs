@@ -10,14 +10,12 @@ class UsersController {
       throw new AppError("Nome do usuário  é obrigatório");
     }
 
-    const user = knex("users");
-    console.log(user);
+    const usersEmail = await knex.select("email").from("users");
 
-    const checkEmailExist = knex("users").where({ email: email }).first();
-    console.log(checkEmailExist);
+    const checkEmailExist = usersEmail.filter((e) => e.email === email);
 
-    if (checkEmailExist && checkEmailExist.id !== user.id) {
-      throw new AppError("Email já esta cadastrado com outro usuário");
+    if (checkEmailExist.length > 0) {
+      throw new AppError("Email já esta cadastrado");
     }
 
     const hashedPassword = await hash(password, 8);
@@ -49,7 +47,7 @@ class UsersController {
   }
 
   async index(request, response) {
-    const users = await knex("users").orderBy("name");
+    const users = await knex("users");
 
     return response.json({ users });
   }
@@ -70,7 +68,7 @@ class UsersController {
 
     await knex("users").where({ id: user_id }).update({ name, email });
 
-    return response.json({ user });
+    return response.json({ ...user });
   }
 }
 
