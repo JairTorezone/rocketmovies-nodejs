@@ -12,3 +12,6 @@ usersRoutes.get("/users/:id", usersController.show);
 usersRoutes.delete("/users/:id", usersController.delete);
 
 module.exports = usersRoutes;
+
+
+
