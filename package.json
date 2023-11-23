@@ -1,7 +1,6 @@
 {
   "name": "rocktmovies",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node ./src/server.js",
@@ -20,5 +19,6 @@
     "knex": "^3.0.1",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.6"
-  }
+  },
+  "description": ""
 }
