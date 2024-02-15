@@ -27,7 +27,51 @@ class UsersController {
       avatar,
     });
 
-    return response.json();
+    return response.status(201).json();
+  }
+
+  async update(request, response) {
+    const { id, name, email, updated_at, password, old_password } =
+      request.body;
+    const { user_id } = request.params;
+
+    const user = await knex("users").where({ id: user_id }).first();
+
+    if (!user) {
+      throw new AppError("Usuário não cadastrado");
+    }
+
+    const checkEmailExist = await knex("users").where({ email: email }).first();
+
+    if (checkEmailExist && checkEmailExist.id !== user.id) {
+      throw new AppError("Email já esta cadastrado com outro usuário");
+    }
+
+    //** if password iguals old_password/
+    if (password && !old_password) {
+      throw new AppError(
+        "Você precisa informar a senha antiga para definir uma nova senha"
+      );
+    }
+
+    if (password && old_password) {
+      const checkOldPassword = await compare(old_password, user.password);
+
+      if (!checkOldPassword) {
+        console.log(old_password, user.password);
+        throw new AppError("A senha antiga não confere.");
+      }
+
+      user.password = await hash(password, 8);
+    }
+
+    await knex("users")
+      .where({ id: user_id })
+      .update({ name, email, password: user.password });
+
+    user.updated_at = new Date();
+
+    return response.json({ ...user });
   }
 
   async show(request, response) {
@@ -49,26 +93,7 @@ class UsersController {
   async index(request, response) {
     const users = await knex("users");
 
-    return response.json({ users });
-  }
-
-  async update(request, response) {
-    const { id, name, email } = request.body;
-    const { user_id } = request.params;
-
-    const user = await knex("users").where({ id: user_id }).first();
-    if (!user) {
-      throw new AppError("Usuário não cadastrado");
-    }
-
-    const checkEmailExist = await knex("users").where({ email: email }).first();
-    if (checkEmailExist && checkEmailExist.id !== user.id) {
-      throw new AppError("Email já esta cadastrado com outro usuário");
-    }
-
-    await knex("users").where({ id: user_id }).update({ name, email });
-
-    return response.json({ ...user });
+    return response.json(users);
   }
 }
 
