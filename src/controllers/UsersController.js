@@ -31,11 +31,12 @@ class UsersController {
   }
 
   async update(request, response) {
-    const { id, name, email, updated_at, password, old_password } =
-      request.body;
-    const { user_id } = request.params;
+    const { name, email, updated_at, password, old_password } = request.body;
+    const user_id = request.user.id;
+    console.log("Valor id = " + user_id);
 
     const user = await knex("users").where({ id: user_id }).first();
+    console.log("Usuário: " + user);
 
     if (!user) {
       throw new AppError("Usuário não cadastrado");
