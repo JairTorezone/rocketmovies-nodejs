@@ -1,31 +1,17 @@
 const AppError = require("../utils/AppError");
 const knex = require("../database/knex");
 const { hash, compare } = require("bcryptjs");
+const UserRepository = require("../repositories/UserRepository");
+const UserCreateServices = require("../services/UserCreateServices");
 
 class UsersController {
   async create(request, response) {
     const { name, email, password, avatar } = request.body;
 
-    if (!name) {
-      throw new AppError("Nome do usuário  é obrigatório");
-    }
+    const userRepository = new UserRepository();
+    const userCreateServices = new UserCreateServices(userRepository);
 
-    const usersEmail = await knex.select("email").from("users");
-
-    const checkEmailExist = usersEmail.filter((e) => e.email === email);
-
-    if (checkEmailExist.length > 0) {
-      throw new AppError("Email já esta cadastrado");
-    }
-
-    const hashedPassword = await hash(password, 8);
-
-    await knex("users").insert({
-      name,
-      email,
-      password: hashedPassword,
-      avatar,
-    });
+    await userCreateServices.execute({ name, email, password, avatar });
 
     return response.status(201).json();
   }
@@ -75,18 +61,13 @@ class UsersController {
     return response.json({ ...user });
   }
 
-  async show(request, response) {
-    const { id } = request.params;
-
-    const users = await knex("users").where({ id }).first();
-
-    return response.json({ users });
-  }
-
   async delete(request, response) {
     const { id } = request.params;
 
-    await knex("users").where({ id }).delete();
+    const userRepository = new UserRepository();
+    const userCreateServices = new UserCreateServices(userRepository);
+
+    await userCreateServices.delete({ id });
 
     return response.json();
   }
@@ -95,6 +76,14 @@ class UsersController {
     const users = await knex("users");
 
     return response.json(users);
+  }
+
+  async show(request, response) {
+    const { id } = request.params;
+
+    const users = await knex("users").where({ id }).first();
+
+    return response.json({ users });
   }
 }
 
