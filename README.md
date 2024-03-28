@@ -1,4 +1,4 @@
-# <h1 align="center"> Rocketmovie </h1>
+# <h1 align="center"> Rocketmovies </h1>
 
 <p align="center">
 RocketMovie é uma aplicação backend feita em Node.js onde o usuário cadastra um filme, preenche com algumas informações (nome, descrição, nota) e cria tags relacionadas a ele.  <br/>
