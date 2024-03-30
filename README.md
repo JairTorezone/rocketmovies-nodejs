@@ -58,7 +58,7 @@ $ npm -v
 # Clonar o repositório
 git clone https://github.com/JairTorezone/rocketmovies-nodejs
 
-# Acessar a pasta dscarrostop
+# Acessar a pasta backend
 cd backend
 ```
 
